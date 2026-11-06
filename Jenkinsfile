@@ -1,29 +1,29 @@
-pipeline
- {
-  stages
-   {
-    stage ('Checkout')
-     {
-       steps {
-              checkout scm
-             }
-     }
-     stage
-      {
-       steps {
-              bat 'mvnw.cmd -B clean verify'
-             }
-       }
-     }
-   
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build and Test') {
+            steps {
+                bat 'mvnw.cmd -B clean verify'
+            }
+        }
+    }
+
     post {
-           success {
+        success {
             archiveArtifacts artifacts: 'target/*.jar',
-                             fingerprint: true        
-                   }         
-	   always {
+                             fingerprint: true
+        }
+
+        always {
             junit testResults: 'target/surefire-reports/*.xml',
                   allowEmptyResults: true
         }
-      }
- }     
+    }
+}
